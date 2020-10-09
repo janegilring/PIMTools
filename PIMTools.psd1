@@ -1,6 +1,9 @@
 @{
     # Version number of this module.
-    moduleVersion     = '0.1.0.0'
+    ModuleVersion     = '0.1.0.0'
+
+    # Supported PSEditions
+    CompatiblePSEditions = @('Desktop')
 
     RootModule = 'PIMTools.psm1'
 
