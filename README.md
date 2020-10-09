@@ -20,7 +20,8 @@ without having to sign it with a digital signature.
 Run the following command to configure the execution policy:
 *Set-ExecutionPolicy RemoteSigned*
 
-Make sure you start PowerShell with "Run As Administrator" before running the command.
+Make sure you start PowerShell with "Run As Administrator" before running the command. Alternatively, run the following if you do not have Administrator privileges:
+*Set-ExecutionPolicy RemoteSigned -Scope CurrentUser*
 
 3. **Install the PIMTools module**
 
