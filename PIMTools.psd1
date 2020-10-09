@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.1.0.0'
+    ModuleVersion     = '0.1.1.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Desktop')
@@ -8,7 +8,7 @@
     RootModule = 'PIMTools.psm1'
 
     # ID used to uniquely identify this module.
-    GUID              = '0d976e94-59d9-4613-a84f-8fa3caa04ffd'
+    GUID       = '0d976e94-59d9-4613-a84f-8fa3caa04ffd'
 
     # Author of this module
     Author = 'Jan Egil Ring'
@@ -23,7 +23,7 @@
     Description       = 'PIMTools is a PowerShell module with commands for working with Azure AD Privileged Identity Management.'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion = '3.0'
+    PowerShellVersion = '5.1'
 
     # Minimum version of the common language runtime (CLR) required by this module
     CLRVersion        = '4.0'
