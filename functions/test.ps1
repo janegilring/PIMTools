@@ -1,0 +1,1 @@
+function test {Write-Host 'Hello'}
