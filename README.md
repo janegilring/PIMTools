@@ -2,13 +2,14 @@
 
 PIMTools is a PowerShell module with commands for working with Azure AD Privileged Identity Management.
 
+See [this](https://www.powershell.no/azure,/powershell,/pim,/privileged/identity/management,/azure/ad/2020/10/10/pim-tools.html) blog-post for more information.
 
 # Getting started
 
-1. **Start Windows PowerShell (on Windows 7 - 10)**
+1. **Start Windows PowerShell**
 
-Simply press the Start button and search for "PowerShell". You will likely get two hits:
-"Windows PowerShell" and "Windows PowerShell ISE". For more modern console and editor feature you may also want to check out [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/) and [Visual Studio Code](https://code.visualstudio.com/).
+Press the Start button and search for "PowerShell". You will likely get two hits:
+"Windows PowerShell" and "Windows PowerShell ISE". For more modern console and editor features you may also want to check out [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/) and [Visual Studio Code](https://code.visualstudio.com/).
 
 2. **Allow PowerShell scripts to be executed**
 
@@ -17,11 +18,16 @@ meaning that no scripts is allowed to run. In the context of this article, I wil
 to set the execution policy to "RemoteSigned". This means that you can run scripts locally
 without having to sign it with a digital signature.
 
-Run the following command to configure the execution policy:
-*Set-ExecutionPolicy RemoteSigned*
+```powershell
+# Check current settings
+Get-ExecutionPolicy
 
-Make sure you start PowerShell with "Run As Administrator" before running the command. Alternatively, run the following if you do not have Administrator privileges:
-*Set-ExecutionPolicy RemoteSigned -Scope CurrentUser*
+# If the execution policy is set to Restricted, run the following command to configure the execution policy to RemoteSigned
+Set-ExecutionPolicy RemoteSigned
+
+# Make sure you start PowerShell with "Run As Administrator" before running the command. Alternatively, run the following if you do not have Administrator privileges:
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
 3. **Install the PIMTools module**
 
@@ -31,11 +37,16 @@ Install-Module -Name PIMTools
 ```
 
 If this is the first time you run this command, you will be prompted to install NuGet which is being
- used under the hood to interact with the PowerShell Gallery. Answer Yes when prompted to install
+ used under the hood to interact with the PowerShell Gallery. Answer *Yes* when prompted to install
 this prerequisite. Next, you will be warned that the PowerShell Gallery by default is configured
-as an untrusted source. Answer Yes to acknowledge this and install the module.
+as an untrusted source. Answer *Yes* to acknowledge this and install the module.
 
 Now the module is installed and is ready to be used.
+
+After you have installed the module, you can later on run the following to get any new version which may contain bug fixes and new functionality:
+```powershell
+Update-Module -Name PIMTools
+```
 
 4. **Example usage**
 
