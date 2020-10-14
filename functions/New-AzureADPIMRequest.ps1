@@ -42,7 +42,7 @@ function New-AzureADPIMRequest {
 
     try {
 
-        $AzureADCurrentSessionInfo = Get-AzureADCurrentSessionInfo -ErrorAction Stop
+        $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo -ErrorAction Stop
 
     }
 
@@ -50,25 +50,25 @@ function New-AzureADPIMRequest {
 
         Write-Host 'No active Azure AD session, calling Connect-AzureAD (the login window often hides in the backgroud, minimize the PowerShell window to check if you do not see it)' -ForegroundColor Yellow
 
-        Connect-AzureAD
-        $AzureADCurrentSessionInfo = Get-AzureADCurrentSessionInfo
+        AzureADPreview\Connect-AzureAD
+        $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo
 
     }
 
 
     switch ($RoleName) {
-        'Global Administrator' { $roleDefinition = Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId -Filter "DisplayName eq 'Global Administrator'" }
-        Default { $roleDefinition = Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId | Out-GridView -PassThru }
+        'Global Administrator' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId -Filter "DisplayName eq 'Global Administrator'" }
+        Default { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId | Out-GridView -PassThru }
     }
 
-    $subject = Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
+    $subject = AzureADPreview\Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
 
     $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
     $schedule.Type = "Once"
     $schedule.StartDateTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $schedule.EndDateTime = (Get-Date).AddHours($DurationInHours).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-    $ExistingRoleAssignmentRequest = Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8)
+    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8)
 
     if ($ExistingRoleAssignmentRequest) {
 
@@ -78,7 +78,7 @@ function New-AzureADPIMRequest {
 
         try {
 
-            Open-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles -Schedule $schedule -ResourceId $AzureADCurrentSessionInfo.TenantId -RoleDefinitionId $roleDefinition.Id -SubjectId $subject.ObjectId -AssignmentState "Active" -Type "UserAdd" -Reason $Reason
+            AzureADPreview\Open-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles -Schedule $schedule -ResourceId $AzureADCurrentSessionInfo.TenantId -RoleDefinitionId $roleDefinition.Id -SubjectId $subject.ObjectId -AssignmentState "Active" -Type "UserAdd" -Reason $Reason
 
             Write-Host "PIM elevation for user $($AzureADCurrentSessionInfo.Account) succeeded" -ForegroundColor Yellow
 

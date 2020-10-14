@@ -44,7 +44,7 @@ function New-AzurePIMRequest {
 
     try {
 
-        $AzureADCurrentSessionInfo = Get-AzureADCurrentSessionInfo -ErrorAction Stop
+        $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo -ErrorAction Stop
 
     }
 
@@ -52,32 +52,32 @@ function New-AzurePIMRequest {
 
         Write-Host 'No active Azure AD session, calling Connect-AzureAD (the login window often hides in the backgroud, minimize the PowerShell window to check if you do not see it)' -ForegroundColor Yellow
 
-        Connect-AzureAD
-        $AzureADCurrentSessionInfo = Get-AzureADCurrentSessionInfo
+        AzureADPreview\Connect-AzureAD
+        $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo
 
     }
 
     switch ($ResourceType) {
-        'resourcegroup' { $resource = Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" | Where-Object DisplayName -eq $ResourceName }
-        'managementgroup' { $resource = Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" | Where-Object DisplayName -eq $ResourceName }
-        'subscription' { $resource = Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" | Where-Object DisplayName -eq $ResourceName }
-        Default { $resource = Get-AzureADMSPrivilegedResource -Provider azureResources | Out-GridView -PassThru }
+        'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" | Where-Object DisplayName -eq $ResourceName }
+        'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" | Where-Object DisplayName -eq $ResourceName }
+        'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" | Where-Object DisplayName -eq $ResourceName }
+        Default { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources | Out-GridView -PassThru }
     }
 
     switch ($RoleName) {
-        'Owner' { $roleDefinition = Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Owner'" }
-        'Contributor' { $roleDefinition = Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Contributor'" }
-        Default { $roleDefinition = Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id | Out-GridView -PassThru }
+        'Owner' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Owner'" }
+        'Contributor' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Contributor'" }
+        Default { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id | Out-GridView -PassThru }
     }
 
-    $subject = Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
+    $subject = AzureADPreview\Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
 
     $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
     $schedule.Type = "Once"
     $schedule.StartDateTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $schedule.EndDateTime = (Get-Date).AddHours($DurationInHours).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-    $ExistingRoleAssignmentRequest = Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8)
+    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8)
 
     if ($ExistingRoleAssignmentRequest) {
 
@@ -87,7 +87,7 @@ function New-AzurePIMRequest {
 
         try {
 
-            Open-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources -Schedule $schedule -ResourceId $resource.Id -RoleDefinitionId $roleDefinition.Id -SubjectId $subject.ObjectId -AssignmentState "Active" -Type "UserAdd" -Reason $Reason
+            AzureADPreview\Open-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources -Schedule $schedule -ResourceId $resource.Id -RoleDefinitionId $roleDefinition.Id -SubjectId $subject.ObjectId -AssignmentState "Active" -Type "UserAdd" -Reason $Reason
 
             Write-Host "PIM elevation for user $($AzureADCurrentSessionInfo.Account) succeeded" -ForegroundColor Green
 
