@@ -15,7 +15,16 @@ function New-AzurePIMRequest {
 
         Install-Module -Name AzureADPreview -Scope CurrentUser
 
-        Import-Module -Name AzureADPreview
+        if (Get-Module -Name AzureAD) {
+
+            Remove-Module -Name AzureAD
+            Import-Module -Name AzureADPreview
+
+        } else {
+
+            Import-Module -Name AzureADPreview
+
+        }
 
     } else {
 
