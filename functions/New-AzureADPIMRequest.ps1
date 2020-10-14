@@ -11,7 +11,7 @@ function New-AzureADPIMRequest {
 
         Write-Host 'Azure AD Preview module required, installing' -ForegroundColor Yellow
 
-        Install-Module -Name AzureADPreview -Scope CurrentUser
+        Install-Module -Name AzureADPreview -Scope CurrentUser -AllowClobber
 
         if (Get-Module -Name AzureAD) {
 
