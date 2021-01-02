@@ -77,7 +77,7 @@ function New-AzurePIMRequest {
     $schedule.StartDateTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $schedule.EndDateTime = (Get-Date).AddHours($DurationInHours).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8)
+    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8) | Where-Object ResourceId -eq $resource.Id | Where-Object RoleDefinitionId -eq $roleDefinition.Id
 
     if ($ExistingRoleAssignmentRequest) {
 

@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.2.0.0'
+    ModuleVersion     = '0.3.0.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Desktop')
@@ -17,7 +17,7 @@
     CompanyName = 'PSCommunity'
 
     # Copyright statement for this module
-    Copyright = '(c) 2020 Jan Egil Ring. All rights reserved.'
+    Copyright = '(c) 2021 Jan Egil Ring. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'PIMTools is a PowerShell module with commands for working with Azure AD Privileged Identity Management.'
@@ -52,7 +52,7 @@
             ProjectUri   = 'https://github.com/janegilring/PIMTools'
 
             # ReleaseNotes of this module
-            ReleaseNotes = ''
+            ReleaseNotes = 'Bugfix - filter for resource id and role defintion id when checking existing PIM assignments'
 
         } # End of PSData hashtable
 
