@@ -2,7 +2,7 @@ function New-AzureADPIMRequest {
     [CmdletBinding()]
     param (
         [int]$DurationInHours = 8,
-        $RoleName = 'Global Reader',
+        $RoleName = '',
         $Reason = "Daily PIM elevation"
     )
 
@@ -58,7 +58,8 @@ function New-AzureADPIMRequest {
 
     switch ($RoleName) {
         'Global Administrator' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId -Filter "DisplayName eq 'Global Administrator'" }
-        Default { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId | Out-GridView -PassThru }
+        '' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId | Out-GridView -PassThru }
+        Default { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId | Where-Object {$_.DisplayName -eq $RoleName} }
     }
 
     $subject = AzureADPreview\Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
