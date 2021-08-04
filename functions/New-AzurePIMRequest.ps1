@@ -63,17 +63,64 @@ function New-AzurePIMRequest {
 
         Write-Host 'No active Azure AD session, calling Connect-AzureAD (the login window often hides in the backgroud, minimize the PowerShell window to check if you do not see it)' -ForegroundColor Yellow
 
-        AzureADPreview\Connect-AzureAD
+        # Get token for MS Graph by prompting for MFA (note: ClientId 1b730954-1685-4b74-9bfd-dac224a7b894 = Azure PowerShell)
+        $MsResponse = Get-MSALToken -Scopes @("https://graph.microsoft.com/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -Interactive -ExtraQueryParameters @{claims = '{"access_token" : {"amr": { "values": ["mfa"] }}}' } -ErrorAction Stop
+
+        # Get token for AAD Graph
+        $AadResponse = Get-MSALToken -Scopes @("https://graph.windows.net/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -ErrorAction Stop
+
+        AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AzureADCurrentSessionInfo.Account.Id -tenantId: $AzureADCurrentSessionInfo.TenantId.Guid -ErrorAction Stop
+
         $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo
 
     }
 
-    switch ($ResourceType) {
-        'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" | Where-Object DisplayName -eq $ResourceName }
-        'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" | Where-Object DisplayName -eq $ResourceName }
-        'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" | Where-Object DisplayName -eq $ResourceName }
-        Default { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources | Out-GridView -PassThru }
+
+
+
+
+    try {
+
+        switch ($ResourceType) {
+            'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            Default { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -ErrorAction Stop | Out-GridView -PassThru }
+        }
+
+    } catch {
+
+
+        if ($PSItem.Exception[0].Message -like "*expired*") {
+
+            Write-Host 'Access token expired - calling Get-MSALToken (the login window often hides in the backgroud, minimize the PowerShell window to check if you do not see it)' -ForegroundColor Yellow
+
+            # Get token for MS Graph by prompting for MFA (note: ClientId 1b730954-1685-4b74-9bfd-dac224a7b894 = Azure PowerShell)
+            $MsResponse = Get-MSALToken -Scopes @("https://graph.microsoft.com/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -Interactive -ExtraQueryParameters @{claims = '{"access_token" : {"amr": { "values": ["mfa"] }}}' } -ErrorAction Stop
+
+            # Get token for AAD Graph
+            $AadResponse = Get-MSALToken -Scopes @("https://graph.windows.net/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -ErrorAction Stop
+
+            AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AzureADCurrentSessionInfo.Account.Id -tenantId: $AzureADCurrentSessionInfo.TenantId.Guid -ErrorAction Stop
+
+            switch ($ResourceType) {
+                'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+                'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+                'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+                Default { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -ErrorAction Stop | Out-GridView -PassThru }
+            }
+
+        } else {
+
+            Write-Host "PIM elevation for user $($AzureADCurrentSessionInfo.Account) failed: $($PSItem.Exception.Message)" -ForegroundColor Red
+
+        }
+
     }
+
+
+
+
 
     switch ($RoleName) {
         'Owner' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Owner'" }
@@ -88,7 +135,7 @@ function New-AzurePIMRequest {
     $schedule.StartDateTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $schedule.EndDateTime = (Get-Date).AddHours($DurationInHours).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8) | Where-Object ResourceId -eq $resource.Id | Where-Object RoleDefinitionId -eq $roleDefinition.Id | Where-Object {$PSItem.Status.Status -ne 'Closed'}
+    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId azureResources | Where-Object RequestedDateTime -gt (Get-Date).AddHours(-8) | Where-Object ResourceId -eq $resource.Id | Where-Object RoleDefinitionId -eq $roleDefinition.Id | Where-Object { $PSItem.Status.Status -ne 'Closed' }
 
     if ($ExistingRoleAssignmentRequest) {
 
@@ -130,7 +177,7 @@ function New-AzurePIMRequest {
                 }
             } else {
 
-            Write-Host "PIM elevation for user $($AzureADCurrentSessionInfo.Account) failed: $($PSItem.Exception.Message)" -ForegroundColor Red
+                Write-Host "PIM elevation for user $($AzureADCurrentSessionInfo.Account) failed: $($PSItem.Exception.Message)" -ForegroundColor Red
 
             }
         }
