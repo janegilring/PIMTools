@@ -65,7 +65,7 @@ function New-AzureADPIMRequest {
         # Get token for AAD Graph
         $AadResponse = Get-MSALToken -Scopes @("https://graph.windows.net/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -ErrorAction Stop
 
-        AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AzureADCurrentSessionInfo.Account.Id -tenantId: $AzureADCurrentSessionInfo.TenantId.Guid -ErrorAction Stop
+        AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AadResponse.Account.Username -tenantId: $AadResponse.TenantId -ErrorAction Stop
 
         $AzureADCurrentSessionInfo = AzureADPreview\Get-AzureADCurrentSessionInfo
 
@@ -90,7 +90,7 @@ function New-AzureADPIMRequest {
             # Get token for AAD Graph
             $AadResponse = Get-MSALToken -Scopes @("https://graph.windows.net/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -ErrorAction Stop
 
-            AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AzureADCurrentSessionInfo.Account.Id -tenantId: $AzureADCurrentSessionInfo.TenantId.Guid -ErrorAction Stop
+            AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AadResponse.Account.Username -tenantId: $AadResponse.TenantId -ErrorAction Stop
 
             switch ($RoleName) {
                 'Global Administrator' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId aadRoles -ResourceId $AzureADCurrentSessionInfo.TenantId -Filter "DisplayName eq 'Global Administrator'" -ErrorAction Stop }
@@ -144,7 +144,7 @@ function New-AzureADPIMRequest {
                     # Get token for AAD Graph
                     $AadResponse = Get-MSALToken -Scopes @("https://graph.windows.net/.default") -ClientId "1b730954-1685-4b74-9bfd-dac224a7b894" -RedirectUri "urn:ietf:wg:oauth:2.0:oob" -Authority "https://login.microsoftonline.com/common" -ErrorAction Stop
 
-                    AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AzureADCurrentSessionInfo.Account.Id -tenantId: $AzureADCurrentSessionInfo.TenantId.Guid -ErrorAction Stop
+                    AzureADPreview\Connect-AzureAD -AadAccessToken $AadResponse.AccessToken -MsAccessToken $MsResponse.AccessToken -AccountId: $AadResponse.Account.Username -tenantId: $AadResponse.TenantId -ErrorAction Stop
 
                     AzureADPreview\Open-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles -Schedule $schedule -ResourceId $AzureADCurrentSessionInfo.TenantId -RoleDefinitionId $roleDefinition.Id -SubjectId $subject.ObjectId -AssignmentState "Active" -Type "UserAdd" -Reason $Reason -ErrorAction Stop
                 }

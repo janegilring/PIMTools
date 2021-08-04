@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.6.0.0'
+    ModuleVersion     = '0.6.1.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Desktop')
@@ -52,7 +52,7 @@
             ProjectUri   = 'https://github.com/janegilring/PIMTools'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Changed to always used token based login when calling Connect-AzureAD to support users with access to multiple tenants and multiple subscriptions.'
+            ReleaseNotes = 'Bugfix - tenant id/username references'
 
         } # End of PSData hashtable
 
