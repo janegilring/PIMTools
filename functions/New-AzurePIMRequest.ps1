@@ -79,9 +79,9 @@ function New-AzurePIMRequest {
     try {
 
         switch ($ResourceType) {
-            'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
-            'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
-            'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            'resourcegroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'resourcegroup' and DisplayName eq '$ResourceName'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            'managementgroup' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -ProviderId AzureResources -Filter "Type eq 'managementgroup' and DisplayName eq '$ResourceName'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
+            'subscription' { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -Filter "Type eq 'subscription' and DisplayName eq '$ResourceName'" -ErrorAction Stop | Where-Object DisplayName -eq $ResourceName }
             Default { $resource = AzureADPreview\Get-AzureADMSPrivilegedResource -Provider azureResources -ErrorAction Stop | Out-GridView -PassThru }
         }
 
