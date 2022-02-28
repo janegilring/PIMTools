@@ -2,7 +2,7 @@ function New-AzurePIMRequest {
     [CmdletBinding()]
     param (
         [int]$DurationInHours = 8,
-        $RoleName = 'Contributor',
+        $RoleName = '',
         $ResourceType = 'ManagementGroup',
         $ResourceName = 'IT',
         $Reason = "Daily PIM elevation"
@@ -115,14 +115,10 @@ function New-AzurePIMRequest {
 
     }
 
-
-
-
-
-    switch ($RoleName) {
-        'Owner' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Owner'" }
-        'Contributor' { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq 'Contributor'" }
-        Default { $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id | Out-GridView -PassThru }
+    if ($RoleName) {
+        $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id -Filter "DisplayName eq '$RoleName'"
+    } else {
+        $roleDefinition = AzureADPreview\Get-AzureADMSPrivilegedRoleDefinition -ProviderId azureResources -ResourceId $resource.Id | Out-GridView -PassThru
     }
 
     $subject = AzureADPreview\Get-AzureADUser -Filter ("userPrincipalName eq" + "'" + $($AzureADCurrentSessionInfo.Account) + "'")
