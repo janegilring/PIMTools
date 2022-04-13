@@ -1,9 +1,9 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.6.2.0'
+    ModuleVersion     = '0.7.0'
 
     # Supported PSEditions
-    CompatiblePSEditions = @('Desktop')
+    CompatiblePSEditions = @('Core','Desktop')
 
     RootModule = 'PIMTools.psm1'
 
@@ -52,7 +52,7 @@
             ProjectUri   = 'https://github.com/janegilring/PIMTools'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Bugfix - Get-AzureADMSPrivilegedResource results filtering'
+            ReleaseNotes = 'Enabled support for PowerShell Core/7.x'
 
         } # End of PSData hashtable
 
