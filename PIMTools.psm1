@@ -1,5 +1,3 @@
-#requires -PSEdition Desktop
-
 # Load functions from module subfolder
 $ModuleRoot = Split-Path -Path $MyInvocation.MyCommand.Path
 
