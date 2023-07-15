@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.7.0'
+    ModuleVersion     = '0.8.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core','Desktop')
@@ -17,7 +17,7 @@
     CompanyName = 'PSCommunity'
 
     # Copyright statement for this module
-    Copyright = '(c) 2022 Jan Egil Ring. All rights reserved.'
+    Copyright = '(c) 2023 Jan Egil Ring. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'PIMTools is a PowerShell module with commands for working with Azure AD Privileged Identity Management.'
@@ -52,7 +52,7 @@
             ProjectUri   = 'https://github.com/janegilring/PIMTools'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Enabled support for PowerShell Core/7.x'
+            ReleaseNotes = 'Bugfix for New-AzureADPIMRequest - detection of existing role assignments'
 
         } # End of PSData hashtable
 
