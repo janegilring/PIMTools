@@ -113,7 +113,7 @@ function New-AzureADPIMRequest {
     $schedule.StartDateTime = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
     $schedule.EndDateTime = (Get-Date).AddHours($DurationInHours).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles | Where-Object RoleDefinitionId -eq $roleDefinition.Id | Where-Object { $PSItem.Status.SubStatus -ne 'Provisioned' }
+    $ExistingRoleAssignmentRequest = AzureADPreview\Get-AzureADMSPrivilegedRoleAssignmentRequest -ProviderId aadRoles | Where-Object RoleDefinitionId -eq $roleDefinition.Id | Where-Object { $PSItem.Status.SubStatus -ne 'Provisioned' -and $PSItem.Status.SubStatus -ne 'Revoked' }
 
     if ($ExistingRoleAssignmentRequest) {
 

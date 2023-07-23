@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '0.8.0'
+    ModuleVersion     = '0.9.0'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core','Desktop')
@@ -52,7 +52,7 @@
             ProjectUri   = 'https://github.com/janegilring/PIMTools'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Bugfix for New-AzureADPIMRequest - detection of existing role assignments'
+            ReleaseNotes = 'Bugfix for New-AzureADPIMRequest - filtering for revoked assignments'
 
         } # End of PSData hashtable
 
