@@ -1,3 +1,9 @@
+# Deprecation
+
+This module was deprecated in 2025 due to the need to update the API calls to newer ones.
+Since a lot of alternative tools (both CLI and PowerShell) exists, it was decided to deprecate this module.
+
+
 # PIMTools
 
 PIMTools is a PowerShell module with commands for working with Azure AD Privileged Identity Management.
